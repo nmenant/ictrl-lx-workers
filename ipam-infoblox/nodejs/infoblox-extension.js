@@ -11,7 +11,7 @@ var logger = require('f5-logger').getInstance();
 var promise = require("/usr/share/rest/node/node_modules/promise");
 var InfobloxFunc = require("../utils/infoblox-utils.js");
 
-var DEBUG = "true";
+var DEBUG = true;
 
 function InfobloxWorker() {}
 

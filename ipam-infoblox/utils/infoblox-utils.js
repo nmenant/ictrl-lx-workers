@@ -66,7 +66,7 @@ function InfobloxUtils (name, subnet) {
               var jsonBody = JSON.parse(body);
               if (jsonBody.result.length == 0) {
                 logger.info("Infoblox Utils: function GetIPFromHostname, http request to infoblox failed - hostname does not exist: ");
-                reject("Hostname is not defined in Infoblox");                              
+                reject("Hostname is not defined in Infoblox");
               } else {
                 logger.info("Infoblox Utils: function GetIPFromHostname, http request to infoblox succeeded - IP: " + jsonBody.result[0].ipv4addrs[0].ipv4addr);
                 resolve(jsonBody.result[0].ipv4addrs[0].ipv4addr);
