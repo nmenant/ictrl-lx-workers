@@ -4,12 +4,12 @@
  * infoblox to retrieve the service external IP
 */
 
-var http = require('http');
 var logger = require('f5-logger').getInstance();
 var AppInterfaceIWFFunc = require("../utils/my-app-interface-iwf-utils.js");
 var AppInterfaceIPAMFunc = require("../utils/my-app-interface-ipam-utils.js");
 var DEBUG = true;
 var WorkerName = "my-app-interface";
+var subnet = "10.100.60.0/24";
 
 function my_interface() {
 }
@@ -30,7 +30,7 @@ my_interface.prototype.onStart = function (success) {
   success();
 };
 
-ipam_extension.prototype.onGet = function (restOperation) {
+my_interface.prototype.onGet = function (restOperation) {
   var uriValue = restOperation.getUri();
   var serviceName = uriValue.path.toString().split("/")[3];
   athis = this;
@@ -39,7 +39,7 @@ ipam_extension.prototype.onGet = function (restOperation) {
     logger.info("DEBUG: " + WorkerName + " - onGet - uri is " + serviceName);
   }
   aThis.completeRestOperation(restOperation);
-}
+};
 
 my_interface.prototype.onPost = function(restOperation) {
   var newState = restOperation.getBody();
@@ -56,8 +56,11 @@ my_interface.prototype.onPost = function(restOperation) {
   if ( templateName ) {
     athis = this;
 
-    var IPAMQuery = new AppInterfaceIPAMFunc();
-    IPAMQuery.GetVSIP(serviceName, "10.100.60.0/24")
+    if (DEBUG) {
+      logger.info(WorkerName + " - onPost() - calling IPAM worker with name: " + serviceName + " and subnet: " + subnet);
+    }
+    var IPAMQuery = new AppInterfaceIPAMFunc(serviceName, subnet);
+    IPAMQuery.GetVSIP()
       .then (function(myIP) {
         logger.info("DEBUG: " + WorkerName + " - onPost, GetVSIP - my retrieved IP is: " + myIP);
         athis.completeRestOperation(restOperation);
@@ -69,7 +72,6 @@ my_interface.prototype.onPost = function(restOperation) {
         athis.completeRestOperation(restOperation);
       });
   }
-  this.completeRestOperation(restOperation);
 };
 
 my_interface.prototype.onPut = function(restOperation) {
