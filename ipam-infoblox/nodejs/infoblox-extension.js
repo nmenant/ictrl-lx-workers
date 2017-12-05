@@ -78,8 +78,9 @@ InfobloxWorker.prototype.onPost = function(restOperation) {
       })
     .catch (function (err){
         logger.info("InfobloxWorker - onPost, AllocateIP - something went wrong: " + JSON.stringify(err));
-        responseBody = "{ \"value\": \"" + err + "\"}";
+        responseBody = "{ \"value\":"  + JSON.stringify(err) + "}";
         restOperation.setBody(responseBody);
+        restOperation.setStatusCode(400);
         athis.completeRestOperation(restOperation);
     });
 };
@@ -115,6 +116,7 @@ InfobloxWorker.prototype.onDelete = function(restOperation) {
     })
     .catch (function (err) {
       logger.info("InfobloxWorker - onDelete, something went wrong: " + JSON.stringify(err));
+      restOperation.setStatusCode(400);
       athis.completeRestOperation(restOperation);
     });
 };

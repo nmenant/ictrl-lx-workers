@@ -69,10 +69,12 @@ function MyAppInterfaceIPAMUtils (name, subnet) {
               }
               resolve(body.value);
             } else {
-                if (DEBUG) {
-                  logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, http request to iWF IPAM worker failed - body: " + body.value);
-                }
-              reject (body);
+              var jsonBody = JSON.parse(body.originalRequestBody)
+              if (DEBUG) {
+                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, http request to iWF IPAM worker failed - body: " + JSON.stringify(body.originalRequestBody));
+                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, http request to iWF IPAM worker failed - body scanned: " + jsonBody.value);
+              }
+              reject (jsonBody.value);
             }
           }
         });

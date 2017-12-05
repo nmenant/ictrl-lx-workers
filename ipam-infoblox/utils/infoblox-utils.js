@@ -115,11 +115,10 @@ function InfobloxUtils (name, subnet) {
             }
             var status = response.statusCode.toString().slice(0,1);
             if ( status == "2") {
+              var jsonBody = JSON.parse(body);
               if (DEBUG) {
                 logger.info("Infoblox Utils: function GetIPFromToken, http request to infoblox succeeded - body!!!!!: " + JSON.stringify(body));
-                var jsonBody = JSON.parse(body);
                 logger.info("Infoblox Utils: function GetIPFromToken, http request to infoblox succeeded - IP: " + jsonBody.ipv4addrs[0].ipv4addr);
-
               }
               resolve(jsonBody.ipv4addrs[0].ipv4addr);
             } else {
@@ -185,10 +184,11 @@ function InfobloxUtils (name, subnet) {
               }
               resolve(body);
             } else {
+              //  var jsonBody = JSON.parse(body);
                 if (DEBUG) {
-                  logger.info("Infoblox Utils: function AllocateIP, http request to infoblox failed - body: " + JSON.stringify(body));
+                  logger.info("Infoblox Utils: function AllocateIP, http request to infoblox failed - body: " + body.text);
                 }
-              reject (body);
+                reject (body.text);
             }
           }
         });

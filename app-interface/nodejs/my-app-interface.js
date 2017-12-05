@@ -38,7 +38,7 @@ my_interface.prototype.onGet = function (restOperation) {
   if (DEBUG) {
     logger.info("DEBUG: " + WorkerName + " - onGet - uri is " + serviceName);
   }
-  aThis.completeRestOperation(restOperation);
+  athis.completeRestOperation(restOperation);
 };
 
 my_interface.prototype.onPost = function(restOperation) {
@@ -60,6 +60,7 @@ my_interface.prototype.onPost = function(restOperation) {
       logger.info(WorkerName + " - onPost() - calling IPAM worker with name: " + serviceName + " and subnet: " + subnet);
     }
     var IPAMQuery = new AppInterfaceIPAMFunc(serviceName, subnet);
+    var AppInterfaceIWFFunc = new
     IPAMQuery.GetVSIP()
       .then (function(myIP) {
         logger.info("DEBUG: " + WorkerName + " - onPost, GetVSIP - my retrieved IP is: " + myIP);
@@ -69,8 +70,11 @@ my_interface.prototype.onPost = function(restOperation) {
         logger.info("DEBUG: " + WorkerName + " - onPost, IPAMQuery - something went wrong: " + JSON.stringify(err));
         responseBody = "{ \"name\": \"" + serviceName + "\", \"value\": \"" + err + "\"}";
         restOperation.setBody(responseBody);
+        restOperation.setStatusCode(400);
         athis.completeRestOperation(restOperation);
       });
+  } else {
+    this.completeRestOperation(restOperation);
   }
 };
 
