@@ -9,6 +9,8 @@ services.
   * an ipam worker (ipam-infoblox). This worker will let you communicate with an
     infoblox platform to retrieve the virtual server IP automatically.
 
+You can setup your app interface worker to leverage the ipam worker or not.
+
 #Requirements
 
 iControl LX extension is available on:
