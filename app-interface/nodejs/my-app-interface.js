@@ -9,7 +9,12 @@ var AppInterfaceIWFFunc = require("../utils/my-app-interface-iwf-utils.js");
 var AppInterfaceIPAMFunc = require("../utils/my-app-interface-ipam-utils.js");
 var DEBUG = true;
 var WorkerName = "my-app-interface";
+
+// specify whether you want infoblox to handle the VS IP or if it will be provided by the consumer
+var useInfoblox = false;
+// subnet is used with infoblox to specify in which subnet you need an IP
 var subnet = "10.100.60.0/24";
+
 
 function my_interface() {
 }
@@ -65,7 +70,16 @@ my_interface.prototype.onGet = function (restOperation) {
       var varsList = iWFServiceDefinition.vars;
       var tablesList = iWFServiceDefinition.tables;
       //We have all the date to build the response to the get request
-      var restBody = "{ \"name\": \"" + serviceName + "\", \"template\": \"" + templateName + "\",\"clustername\": \"" + connectorName + "\",\"app-data\": [";
+      var restBody = "{ \"name\": \"" + serviceName + "\", \"template\": \"" + templateName + "\",";
+
+      if ( !useInfoblox ) {
+        for (var k=0; k < varsList.length; k++) {
+          if (varsList[k].name == "pool__addr") {
+            restBody += "\"service-ip\": \"" + varsList[k].value + "\",";
+          }
+        }
+      }
+      restBody += "\"clustername\": \"" + connectorName + "\",\"app-data\": [";
 
       // reminder: var varsList  -> contains all the vars that were defined in our app definition
       for (var j=0; j < varsList.length; j++) {
@@ -132,10 +146,13 @@ my_interface.prototype.onPost = function(restOperation) {
           logger.info("DEBUG: " + WorkerName + " - onPost, GetConnectorID - the connector ID is: " + myConnectorId);
         }
         connectorId = myConnectorId;
-        return IPAMQuery.GetVSIP();
+        if (useInfoblox) {
+          return IPAMQuery.GetVSIP();
+        } else {
+          return newState["service-ip"];
+        }
       })
       .then (function (myIP) {
-
         if (DEBUG) {
           logger.info("DEBUG: " + WorkerName + " - onPost, GetVSIP - my retrieved IP is: " + myIP);
         }
@@ -234,7 +251,9 @@ my_interface.prototype.onDelete = function(restOperation) {
       if (DEBUG) {
         logger.info("DEBUG: " + WorkerName + " - onDelete - service has been removed from iWF");
       }
-      return IPAMQuery.ReleaseIP(serviceName);
+      if (useInfoblox) {
+        return IPAMQuery.ReleaseIP(serviceName);
+      }
     })
     .then (function () {
       if (DEBUG) {
@@ -254,7 +273,9 @@ my_interface.prototype.onDelete = function(restOperation) {
 * handle /example HTTP request
 */
 my_interface.prototype.getExampleState = function () {
-  return {
+
+  if (useInfoblox) {
+    return {
         "name": "my-app-name",
         "template": "f5-http-lb",
         "clustername": "BIG-IP-student",
@@ -280,7 +301,37 @@ my_interface.prototype.getExampleState = function () {
                 ]
             ]
         }]
-  };
+      };
+    } else {
+      return {
+          "name": "my-app-name",
+          "template": "f5-http-lb",
+          "service-ip": "10.1.50.80",
+          "clustername": "BIG-IP-student",
+          "app-data": [
+                      {
+                          "name": "pool__port",
+                          "value": "80"
+                      }
+          ],
+          "servers-data": [{
+              "name": "pool__Members",
+              "columns": [
+                  "IPAddress",
+                  "State"
+              ],
+              "rows": [
+                  [
+                      "10.1.10.10",
+                      "enabled"
+                  ], [
+                      "10.1.10.11",
+                      "enabled"
+                  ]
+              ]
+          }]
+        };
+    }
 };
 
 module.exports = my_interface;
