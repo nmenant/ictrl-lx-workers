@@ -65,20 +65,20 @@ my_interface.prototype.onPost = function(restOperation) {
     var IWFInterface = new AppInterfaceIWFFunc();
 
     IWFInterface.GetConnectorID(connectorName)
-      .then (function(myConnectorID) {
+      .then (function(myConnectorId) {
         if (DEBUG) {
-          logger.info("DEBUG: " + WorkerName + " - onPost, GetConnectorID - the connector ID is: " + myConnectorID);
+          logger.info("DEBUG: " + WorkerName + " - onPost, GetConnectorID - the connector ID is: " + myConnectorId);
         }
-        connectorID = myConnectorID;
-        return IPAMQuery.GetVSIP()
+        connectorId = myConnectorId;
+        return IPAMQuery.GetVSIP();
       })
       .then (function (myIP) {
 
         if (DEBUG) {
           logger.info("DEBUG: " + WorkerName + " - onPost, GetVSIP - my retrieved IP is: " + myIP);
-          logger.info("DEBUG: " + WorkerName + " - onPost, connectorID is: " + connectorID);
         }
         vsIP = myIP;
+        return IWFInterface.DeployService(serviceName, templateName, connectorId, vsIP, varsList, tablesList);
       })
       .then (function() {
         athis.completeRestOperation(restOperation);

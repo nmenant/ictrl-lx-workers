@@ -229,7 +229,7 @@ ipam_extension.prototype.onPost = function (restOperation) {
 				    updateRestBody += ",\"properties\": [{\"id\": \"cloudConnectorReference\",\"isRequired\": false, \"value\": \"https://localhost/mgmt/cm/cloud/connectors/local/" + connectorId + "\"}]";
 				    updateRestBody += ",\"selfLink\": \"https://localhost/mgmt/cm/cloud/tenants/" + tenantName + "/services/iapp/" + serviceName + "\"}";
 				    if (DEBUG === true) {
-              logger.info ("DEBUG: " + WorkerName + " update service BODY is: " + JSON.stringify(updateRestBody,' ','\t'));
+              logger.info ("DEBUG: " + WorkerName + " update service BODY is: !" + JSON.stringify(updateRestBody,' ','\t'));
 				    }
 
             //We generate the PUT API call
