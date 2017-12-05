@@ -31,13 +31,72 @@ my_interface.prototype.onStart = function (success) {
 * Handle GET requests
 */my_interface.prototype.onGet = function (restOperation) {
   var uriValue = restOperation.getUri();
-  var serviceName = uriValue.path.toString().split("/")[3];
+  var serviceName = uriValue.path.toString().split("/")[4];
+  var iWFServiceDefinition;
+  var iWFConnectorName;
+
   athis = this;
 
   if (DEBUG) {
     logger.info("DEBUG: " + WorkerName + " - onGet - uri is " + serviceName);
   }
-  athis.completeRestOperation(restOperation);
+  var IWFInterface = new AppInterfaceIWFFunc();
+  IWFInterface.GetService(serviceName)
+    .then (function (body) {
+      if (DEBUG) {
+        logger.info("DEBUG: " + WorkerName + " - onGet - body is " + body);
+      }
+      iWFServiceDefinition = JSON.parse(body);
+
+      var connectorId = iWFServiceDefinition.properties[0].value.toString().split("/");
+      connectorId = connectorId[connectorId.length - 1];
+      if (DEBUG) {
+        logger.info("DEBUG: " + WorkerName + " - onGet - GetService/connectorId is: " + connectorId);
+      }
+      return IWFInterface.GetConnectorName(connectorId);
+    })
+    .then (function (connectorName) {
+      if (DEBUG) {
+        logger.info("DEBUG: " + WorkerName + " - onGet - connectorName is " + connectorName);
+      }
+      var templateName = iWFServiceDefinition.tenantTemplateReference.link.toString().split("/");
+      templateName = templateName[templateName.length - 1];
+      var varsList = iWFServiceDefinition.vars;
+      var tablesList = iWFServiceDefinition.tables;
+      //We have all the date to build the response to the get request
+      var restBody = "{ \"name\": \"" + serviceName + "\", \"template\": \"" + templateName + "\",\"clustername\": \"" + connectorName + "\",\"app-data\": [";
+
+      // reminder: var varsList  -> contains all the vars that were defined in our app definition
+      for (var j=0; j < varsList.length; j++) {
+        if (varsList[j].name != "pool__addr") {
+          if (j > 0){
+            restBody += ",";
+          }
+          composeBody(varsList[j]);
+        }
+      }
+      function composeBody(message){
+        restBody += " { \"name\" : \"" + message.name + "\", \"value\" : \"" + message.value + "\"}";
+      }
+
+      restBody += "], \"servers-data\": ";
+      restBody += JSON.stringify(tablesList,' ','\t');
+
+      //close our payload
+      restBody += "}";
+      if (DEBUG === true) {
+        logger.info ("DEBUG: " + WorkerName + " onGet - response service BODY is: " + JSON.stringify(restBody,' ','\t'));
+      }
+      restOperation.setBody(restBody);
+      athis.completeRestOperation(restOperation);
+    })
+    .catch (function (err) {
+      logger.info("DEBUG: " + WorkerName + " - onGet, GetService - something went wrong: " + JSON.stringify(err));
+      responseBody = "{ \"name\": \"" + serviceName + "\", \"value\": \"" + err + "\"}";
+      restOperation.setBody(responseBody);
+      restOperation.setStatusCode(400);
+      athis.completeRestOperation(restOperation);
+    });
 };
 
 /*
@@ -127,13 +186,10 @@ my_interface.prototype.onPatch = function(restOperation) {
 my_interface.prototype.onDelete = function(restOperation) {
   var uriValue = restOperation.getUri();
   var serviceName = uriValue.path.toString().split("/")[4];
-  aThis = this;
+  athis = this;
 
   if (DEBUG) {
-    logger.info(WorkerName + " - onDelete()");
-  }
-  if (DEBUG) {
-    logger.info("DEBUG: " + WorkerName + " - onDelete - service is: " + serviceName);
+    logger.info("DEBUG: " + WorkerName + " - onDelete - service to remove is: " + serviceName);
   }
 
   var IPAMQuery = new AppInterfaceIPAMFunc(serviceName, subnet);

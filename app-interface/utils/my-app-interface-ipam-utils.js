@@ -28,7 +28,7 @@ function MyAppInterfaceIPAMUtils (name, subnet) {
   var subnet = subnet;
 
   if (DEBUG) {
-    logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, serviceName: " + name + " and subnet: " + subnet);
+    logger.info("DEBUG: my-app-interface - ipam utils: function GetVSIP, serviceName: " + name + " and subnet: " + subnet);
   }
 
   /*
@@ -50,22 +50,22 @@ function MyAppInterfaceIPAMUtils (name, subnet) {
         request(options, function (error, response, body) {
           if (error) {
             if (DEBUG) {
-              logger.info("MyAppInterfaceIPAMUtils: function ReleaseIP, delete request to iWF IPAM worker failed: " + error);
+              logger.info("DEBUG: my-app-interface - ipam utils: function ReleaseIP, delete request to iWF IPAM worker failed: " + error);
             }
             reject (error);
           } else {
             if (DEBUG) {
-              logger.info("MyAppInterfaceIPAMUtils: function ReleaseIP, delete request to iWF IPAM worker - response: " + response.statusCode);
+              logger.info("DEBUG: my-app-interface - ipam utils: function ReleaseIP, delete request to iWF IPAM worker - response: " + response.statusCode);
             }
             var status = response.statusCode.toString().slice(0,1);
             if ( status == "2") {
               if (DEBUG) {
-                logger.info("MyAppInterfaceIPAMUtils: function ReleaseIP, delete request to iWF IPAM worker succeeded");
+                logger.info("DEBUG: my-app-interface - ipam utils: function ReleaseIP, delete request to iWF IPAM worker succeeded");
               }
               resolve();
             } else {
               if (DEBUG) {
-                logger.info("MyAppInterfaceIPAMUtils: function ReleaseIP, delete request to iWF IPAM worker failed - body: " + JSON.stringify(body.originalRequestBody));
+                logger.info("DEBUG: my-app-interface - ipam utils: function ReleaseIP, delete request to iWF IPAM worker failed - body: " + JSON.stringify(body.originalRequestBody));
               }
               reject (jsonBody.value);
             }
@@ -99,24 +99,24 @@ function MyAppInterfaceIPAMUtils (name, subnet) {
         request(options, function (error, response, body) {
           if (error) {
             if (DEBUG) {
-              logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, equest to iWF IPAM worker failed: " + error);
+              logger.info("DEBUG: my-app-interface - ipam utils: function GetVSIP, equest to iWF IPAM worker failed: " + error);
             }
             reject (error);
           } else {
             if (DEBUG) {
-              logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, request to iWF IPAM worker - response: " + response.statusCode);
+              logger.info("DEBUG: my-app-interface - ipam utils: function GetVSIP, request to iWF IPAM worker - response: " + response.statusCode);
             }
             var status = response.statusCode.toString().slice(0,1);
             if ( status == "2") {
               if (DEBUG) {
-                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, request to iWF IPAM worker succeeded - body: " + body.value);
+                logger.info("DEBUG: my-app-interface - ipam utils: function GetVSIP, request to iWF IPAM worker succeeded - body: " + body.value);
               }
               resolve(body.value);
             } else {
               var jsonBody = JSON.parse(body.originalRequestBody);
               if (DEBUG) {
-                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, request to iWF IPAM worker failed - body: " + JSON.stringify(body.originalRequestBody));
-                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, request to iWF IPAM worker failed - body scanned: " + jsonBody.value);
+                logger.info("DEBUG: my-app-interface - ipam utils: function GetVSIP, request to iWF IPAM worker failed - body: " + JSON.stringify(body.originalRequestBody));
+                logger.info("DEBUG: my-app-interface - ipam utils: function GetVSIP, request to iWF IPAM worker failed - body scanned: " + jsonBody.value);
               }
               reject (jsonBody.value);
             }
