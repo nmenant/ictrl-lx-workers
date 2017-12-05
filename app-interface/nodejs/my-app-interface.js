@@ -48,6 +48,8 @@ my_interface.prototype.onPost = function(restOperation) {
   var serviceName = newState.name;
   var varsList = newState["app-data"];
   var tablesList = newState["servers-data"];
+  var vsIP;
+  var connectorID;
 
   if (DEBUG) {
     logger.info(WorkerName + " - onPost()");
@@ -60,10 +62,25 @@ my_interface.prototype.onPost = function(restOperation) {
       logger.info(WorkerName + " - onPost() - calling IPAM worker with name: " + serviceName + " and subnet: " + subnet);
     }
     var IPAMQuery = new AppInterfaceIPAMFunc(serviceName, subnet);
-    var AppInterfaceIWFFunc = new
-    IPAMQuery.GetVSIP()
-      .then (function(myIP) {
-        logger.info("DEBUG: " + WorkerName + " - onPost, GetVSIP - my retrieved IP is: " + myIP);
+    var IWFInterface = new AppInterfaceIWFFunc();
+
+    IWFInterface.GetConnectorID(connectorName)
+      .then (function(myConnectorID) {
+        if (DEBUG) {
+          logger.info("DEBUG: " + WorkerName + " - onPost, GetConnectorID - the connector ID is: " + myConnectorID);
+        }
+        connectorID = myConnectorID;
+        return IPAMQuery.GetVSIP()
+      })
+      .then (function (myIP) {
+
+        if (DEBUG) {
+          logger.info("DEBUG: " + WorkerName + " - onPost, GetVSIP - my retrieved IP is: " + myIP);
+          logger.info("DEBUG: " + WorkerName + " - onPost, connectorID is: " + connectorID);
+        }
+        vsIP = myIP;
+      })
+      .then (function() {
         athis.completeRestOperation(restOperation);
       })
       .catch (function (err) {

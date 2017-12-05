@@ -20,7 +20,6 @@ function MyAppInterfaceIPAMUtils (name, subnet) {
   * iWorkflow related parameters to communicate with the IPAM REST Worker
   */
   var IWF_IP = "10.100.60.75";
-  var tenantName = "student";
   var iWFLogin = "admin";
   var iWFPassword = "admin"
   var IPAMRestWorkerURI = "/mgmt/shared/workers/ipam-infoblox";

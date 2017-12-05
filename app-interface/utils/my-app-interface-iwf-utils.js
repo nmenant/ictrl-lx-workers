@@ -19,9 +19,74 @@ function MyAppInterfaceIWFUtils () {
   /*
   * iWorkflow related parameters
   */
-  var IWF_IP = "10.100.60.70";
+  var iwfIP = "10.100.60.75";
   var tenantName = "student";
+  var iWFAdminLogin = "admin";
+  var iWFAdminPassword = "admin";
+  var authAdmin = 'Basic ' + new Buffer(iWFAdminLogin + ':' + iWFAdminPassword).toString('base64');
+  var iWFTenantLogin = "student";
+  var iWFTenantPassword = "student";
+  var authTenant = 'Basic ' + new Buffer(iWFTenantLogin + ':' + iWFTenantPassword).toString('base64');
 
+  /*
+  * This function will talk with your infoblox-ipam worker to retrieve the VS IP
+  */
+  this.GetConnectorID = function (connectorName) {
+    return new Promise (
+      function (resolve, reject) {
+
+        if (DEBUG) {
+          logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID - connectorName to search is: " + connectorName);
+        }
+
+        var options = {
+          method: 'GET',
+      		url: 'https://' + iwfIP + "/mgmt/cm/cloud/connectors/local",
+      		headers:
+        		{
+          		"authorization": authAdmin,
+          		'content-type': 'application/json'
+      			}
+        };
+
+        request(options, function (error, response, body) {
+          if (error) {
+            if (DEBUG) {
+              logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, http request to iWF failed: " + error);
+            }
+            reject (error);
+          } else {
+            if (DEBUG) {
+              logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, http request to iWF - response: " + response.statusCode);
+            }
+            var status = response.statusCode.toString().slice(0,1);
+            if ( status == "2") {
+              var jsonBody = JSON.parse(body);
+              var connectorsList = jsonBody.items;
+              if (DEBUG) {
+                logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, http request to iWF - list of conncetors: " + JSON.stringify(connectorsList));
+              }
+              //Parse the connectors to find the one matching the one specified in the request
+              for (var k=0; k < connectorsList.length; k++) {
+                if (connectorsList[k].name == connectorName) {
+                  if (DEBUG) {
+                    logger.info ("my-app-interface - iWorkflow Utils: function GetConnectorID, connector ID is : " + connectorsList[k].connectorId);
+                  }
+                  resolve(connectorsList[k].connectorId);
+                }
+              }
+              reject("connector Id not found");
+            } else {
+                if (DEBUG) {
+                  logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, http request to iwf failed - body: " + JSON.stringify(body));
+                }
+                reject (body);
+            }
+          }
+       });
+      }
+    )
+  }
 };
 
 module.exports = MyAppInterfaceIWFUtils;
