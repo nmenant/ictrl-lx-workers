@@ -19,7 +19,7 @@ function MyAppInterfaceIWFUtils () {
   /*
   * iWorkflow related parameters
   */
-  var iwfIP = "10.100.60.75";
+  var iWFIP = "10.100.60.75";
   var tenantName = "Student";
   var iWFAdminLogin = "admin";
   var iWFAdminPassword = "admin";
@@ -28,6 +28,51 @@ function MyAppInterfaceIWFUtils () {
   var iWFTenantPassword = "student";
   var authTenant = 'Basic ' + new Buffer(iWFTenantLogin + ':' + iWFTenantPassword).toString('base64');
 
+  this.DeleteService = function (serviceName) {
+    return new Promise (
+      function (resolve, reject) {
+
+        if (DEBUG) {
+          logger.info("my-app-interface - iWorkflow Utils: function DeleteService - deleting service: " + serviceName);
+        }
+
+        var options = {
+          method: 'DELETE',
+      		url: 'https://' + iWFIP + "/mgmt/cm/cloud/tenants/" + tenantName + "/services/iapp/" + serviceName,
+      		headers:
+        		{
+          		"authorization": authTenant,
+          		'content-type': 'application/json'
+      			}
+        };
+
+        request(options, function (error, response, body) {
+          if (error) {
+            if (DEBUG) {
+              logger.info("my-app-interface - iWorkflow Utils: function DeleteService, request to iWF failed: " + error);
+            }
+            reject (error);
+          } else {
+            if (DEBUG) {
+              logger.info("my-app-interface - iWorkflow Utils: function DeleteService, request to iWF - response: " + response.statusCode);
+            }
+            var status = response.statusCode.toString().slice(0,1);
+            if ( status == "2") {
+              if (DEBUG) {
+                logger.info("my-app-interface - iWorkflow Utils: function DeleteService, request to iWF - 200 response");
+              }
+              resolve();
+            } else {
+                if (DEBUG) {
+                  logger.info("my-app-interface - iWorkflow Utils: function DeleteService, request to iwf failed - body: " + JSON.stringify(body));
+                }
+                reject (body);
+            }
+          }
+       });
+      }
+    )
+  }
 
   this.DeployService = function (serviceName, templateName, connectorId, vsIP, varsList, tablesList) {
     return new Promise (
@@ -64,7 +109,7 @@ function MyAppInterfaceIWFUtils () {
         var jsonBody = JSON.parse(updateRestBody);
         var options = {
           method: 'POST',
-      		url: 'https://' + iwfIP + "/mgmt/cm/cloud/tenants/" + tenantName + "/services/iapp/",
+      		url: 'https://' + iWFIP + "/mgmt/cm/cloud/tenants/" + tenantName + "/services/iapp/",
       		headers:
         		{
           		"authorization": authTenant,
@@ -77,22 +122,22 @@ function MyAppInterfaceIWFUtils () {
         request(options, function (error, response, body) {
           if (error) {
             if (DEBUG) {
-              logger.info("my-app-interface - iWorkflow Utils: function DeployService, http request to iWF failed: " + error);
+              logger.info("my-app-interface - iWorkflow Utils: function DeployService, request to iWF failed: " + error);
             }
             reject (error);
           } else {
             if (DEBUG) {
-              logger.info("my-app-interface - iWorkflow Utils: function DeployService, http request to iWF - response: " + response.statusCode);
+              logger.info("my-app-interface - iWorkflow Utils: function DeployService, request to iWF - response: " + response.statusCode);
             }
             var status = response.statusCode.toString().slice(0,1);
             if ( status == "2") {
               if (DEBUG) {
-                logger.info("my-app-interface - iWorkflow Utils: function DeployService, http request to iWF - 200 response");
+                logger.info("my-app-interface - iWorkflow Utils: function DeployService, request to iWF - 200 response");
               }
               resolve();
             } else {
                 if (DEBUG) {
-                  logger.info("my-app-interface - iWorkflow Utils: function DeployService, http request to iwf failed - body: " + JSON.stringify(body));
+                  logger.info("my-app-interface - iWorkflow Utils: function DeployService, request to iwf failed - body: " + JSON.stringify(body));
                 }
                 reject (body);
             }
@@ -114,7 +159,7 @@ function MyAppInterfaceIWFUtils () {
 
         var options = {
           method: 'GET',
-      		url: 'https://' + iwfIP + "/mgmt/cm/cloud/connectors/local",
+      		url: 'https://' + iWFIP + "/mgmt/cm/cloud/connectors/local",
       		headers:
         		{
           		"authorization": authAdmin,
@@ -125,19 +170,19 @@ function MyAppInterfaceIWFUtils () {
         request(options, function (error, response, body) {
           if (error) {
             if (DEBUG) {
-              logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, http request to iWF failed: " + error);
+              logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, request to iWF failed: " + error);
             }
             reject (error);
           } else {
             if (DEBUG) {
-              logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, http request to iWF - response: " + response.statusCode);
+              logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, request to iWF - response: " + response.statusCode);
             }
             var status = response.statusCode.toString().slice(0,1);
             if ( status == "2") {
               var jsonBody = JSON.parse(body);
               var connectorsList = jsonBody.items;
               if (DEBUG) {
-                logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, http request to iWF - list of conncetors: " + JSON.stringify(connectorsList));
+                logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, request to iWF - list of conncetors: " + JSON.stringify(connectorsList));
               }
               //Parse the connectors to find the one matching the one specified in the request
               for (var k=0; k < connectorsList.length; k++) {
@@ -151,7 +196,7 @@ function MyAppInterfaceIWFUtils () {
               reject("connector Id not found");
             } else {
                 if (DEBUG) {
-                  logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, http request to iwf failed - body: " + JSON.stringify(body));
+                  logger.info("my-app-interface - iWorkflow Utils: function GetConnectorID, request to iwf failed - body: " + JSON.stringify(body));
                 }
                 reject (body);
             }

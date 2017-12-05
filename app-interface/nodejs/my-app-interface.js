@@ -24,13 +24,12 @@ my_interface.prototype.isPassThrough = true;
 
 //triggered when our worker is loaded
 my_interface.prototype.onStart = function (success) {
-  if (DEBUG) {
-    logger.info(WorkerName + " - onStart()");
-  }
   success();
 };
 
-my_interface.prototype.onGet = function (restOperation) {
+/*
+* Handle GET requests
+*/my_interface.prototype.onGet = function (restOperation) {
   var uriValue = restOperation.getUri();
   var serviceName = uriValue.path.toString().split("/")[3];
   athis = this;
@@ -41,6 +40,9 @@ my_interface.prototype.onGet = function (restOperation) {
   athis.completeRestOperation(restOperation);
 };
 
+/*
+* Handle POSTrequests
+*/
 my_interface.prototype.onPost = function(restOperation) {
   var newState = restOperation.getBody();
   var templateName = newState.template;
@@ -95,6 +97,9 @@ my_interface.prototype.onPost = function(restOperation) {
   }
 };
 
+/*
+* Handle PUT requests
+*/
 my_interface.prototype.onPut = function(restOperation) {
   var newState = restOperation.getBody();
 
@@ -104,6 +109,9 @@ my_interface.prototype.onPut = function(restOperation) {
   this.completeRestOperation(restOperation);
 };
 
+/*
+* Handle PATCH requests
+*/
 my_interface.prototype.onPatch = function(restOperation) {
   var newState = restOperation.getBody();
 
@@ -113,6 +121,45 @@ my_interface.prototype.onPatch = function(restOperation) {
   this.completeRestOperation(restOperation);
 };
 
+/*
+* Handle DELETE requests
+*/
+my_interface.prototype.onDelete = function(restOperation) {
+  var uriValue = restOperation.getUri();
+  var serviceName = uriValue.path.toString().split("/")[4];
+  aThis = this;
+
+  if (DEBUG) {
+    logger.info(WorkerName + " - onDelete()");
+  }
+  if (DEBUG) {
+    logger.info("DEBUG: " + WorkerName + " - onDelete - service is: " + serviceName);
+  }
+
+  var IPAMQuery = new AppInterfaceIPAMFunc(serviceName, subnet);
+  var IWFInterface = new AppInterfaceIWFFunc();
+
+  IWFInterface.DeleteService(serviceName)
+    .then (function () {
+      if (DEBUG) {
+        logger.info("DEBUG: " + WorkerName + " - onDelete - service has been removed from iWF");
+      }
+      return IPAMQuery.ReleaseIP(serviceName);
+    })
+    .then (function () {
+      if (DEBUG) {
+        logger.info("DEBUG: " + WorkerName + " - onDelete - released IP from IPAM");
+      }
+      athis.completeRestOperation(restOperation);
+    })
+    .catch (function (err) {
+      logger.info("DEBUG: " + WorkerName + " - onDelete, something went wrong: " + JSON.stringify(err));
+      responseBody = "{ \"name\": \"" + serviceName + "\", \"value\": \"" + err + "\"}";
+      restOperation.setBody(responseBody);
+      restOperation.setStatusCode(400);
+      athis.completeRestOperation(restOperation);
+    });
+};
 /**
 * handle /example HTTP request
 */

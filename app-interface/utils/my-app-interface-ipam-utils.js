@@ -19,7 +19,7 @@ function MyAppInterfaceIPAMUtils (name, subnet) {
   /*
   * iWorkflow related parameters to communicate with the IPAM REST Worker
   */
-  var IWF_IP = "10.100.60.75";
+  var iWFIP = "10.100.60.75";
   var iWFLogin = "admin";
   var iWFPassword = "admin"
   var IPAMRestWorkerURI = "/mgmt/shared/workers/ipam-infoblox";
@@ -30,6 +30,51 @@ function MyAppInterfaceIPAMUtils (name, subnet) {
   if (DEBUG) {
     logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, serviceName: " + name + " and subnet: " + subnet);
   }
+
+  /*
+  * This function will talk with your infoblox-ipam worker to release a Host/IP
+  */
+  this.ReleaseIP = function (myHost) {
+    return new Promise (
+      function (resolve, reject) {
+
+        var options = {
+          method: 'DELETE',
+      		url: 'https://' + iWFIP + IPAMRestWorkerURI + "/" + myHost,
+      		headers:
+        		{
+          		"authorization": auth,
+          		'content-type': 'application/json'
+      			}
+        };
+        request(options, function (error, response, body) {
+          if (error) {
+            if (DEBUG) {
+              logger.info("MyAppInterfaceIPAMUtils: function ReleaseIP, delete request to iWF IPAM worker failed: " + error);
+            }
+            reject (error);
+          } else {
+            if (DEBUG) {
+              logger.info("MyAppInterfaceIPAMUtils: function ReleaseIP, delete request to iWF IPAM worker - response: " + response.statusCode);
+            }
+            var status = response.statusCode.toString().slice(0,1);
+            if ( status == "2") {
+              if (DEBUG) {
+                logger.info("MyAppInterfaceIPAMUtils: function ReleaseIP, delete request to iWF IPAM worker succeeded");
+              }
+              resolve();
+            } else {
+              if (DEBUG) {
+                logger.info("MyAppInterfaceIPAMUtils: function ReleaseIP, delete request to iWF IPAM worker failed - body: " + JSON.stringify(body.originalRequestBody));
+              }
+              reject (jsonBody.value);
+            }
+          }
+        });
+      }
+    )
+  }
+
   /*
   * This function will talk with your infoblox-ipam worker to retrieve the VS IP
   */
@@ -42,7 +87,7 @@ function MyAppInterfaceIPAMUtils (name, subnet) {
         };
         var options = {
           method: 'POST',
-      		url: 'https://' + IWF_IP + IPAMRestWorkerURI,
+      		url: 'https://' + iWFIP + IPAMRestWorkerURI,
       		headers:
         		{
           		"authorization": auth,
@@ -54,24 +99,24 @@ function MyAppInterfaceIPAMUtils (name, subnet) {
         request(options, function (error, response, body) {
           if (error) {
             if (DEBUG) {
-              logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, http request to iWF IPAM worker failed: " + error);
+              logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, equest to iWF IPAM worker failed: " + error);
             }
             reject (error);
           } else {
             if (DEBUG) {
-              logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, http request to iWF IPAM worker - response: " + response.statusCode);
+              logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, request to iWF IPAM worker - response: " + response.statusCode);
             }
             var status = response.statusCode.toString().slice(0,1);
             if ( status == "2") {
               if (DEBUG) {
-                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, http request to iWF IPAM worker succeeded - body: " + body.value);
+                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, request to iWF IPAM worker succeeded - body: " + body.value);
               }
               resolve(body.value);
             } else {
-              var jsonBody = JSON.parse(body.originalRequestBody)
+              var jsonBody = JSON.parse(body.originalRequestBody);
               if (DEBUG) {
-                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, http request to iWF IPAM worker failed - body: " + JSON.stringify(body.originalRequestBody));
-                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, http request to iWF IPAM worker failed - body scanned: " + jsonBody.value);
+                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, request to iWF IPAM worker failed - body: " + JSON.stringify(body.originalRequestBody));
+                logger.info("MyAppInterfaceIPAMUtils: function GetVSIP, request to iWF IPAM worker failed - body scanned: " + jsonBody.value);
               }
               reject (jsonBody.value);
             }
