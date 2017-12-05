@@ -29,7 +29,8 @@ my_interface.prototype.onStart = function (success) {
 
 /*
 * Handle GET requests
-*/my_interface.prototype.onGet = function (restOperation) {
+*/
+my_interface.prototype.onGet = function (restOperation) {
   var uriValue = restOperation.getUri();
   var serviceName = uriValue.path.toString().split("/")[4];
   var iWFServiceDefinition;
@@ -120,7 +121,7 @@ my_interface.prototype.onPost = function(restOperation) {
     athis = this;
 
     if (DEBUG) {
-      logger.info(WorkerName + " - onPost() - calling IPAM worker with name: " + serviceName + " and subnet: " + subnet);
+      logger.info("DEBUG: " + WorkerName + " - onPost() - calling IPAM worker with name: " + serviceName + " and subnet: " + subnet);
     }
     var IPAMQuery = new AppInterfaceIPAMFunc(serviceName, subnet);
     var IWFInterface = new AppInterfaceIWFFunc();
@@ -161,11 +162,44 @@ my_interface.prototype.onPost = function(restOperation) {
 */
 my_interface.prototype.onPut = function(restOperation) {
   var newState = restOperation.getBody();
+  var serviceName = newState.name;
+  var connectorName = newState.clustername;
+  var vsIP;
+  var athis = this;
 
   if (DEBUG) {
-    logger.info(WorkerName + " - onPut()");
+    logger.info("DEBUG: " + WorkerName + " - onPut()");
   }
-  this.completeRestOperation(restOperation);
+
+  var IWFInterface = new AppInterfaceIWFFunc();
+  IWFInterface.GetServiceVSIP(serviceName)
+    .then (function (myVSIP) {
+      if (DEBUG) {
+        logger.info("DEBUG: " + WorkerName + " - onPut() - the VS IP for " + serviceName + " is: " + myVSIP);
+      }
+      vsIP = myVSIP;
+      return IWFInterface.GetConnectorID(connectorName);
+    })
+    .then (function (connectorId) {
+      if (DEBUG) {
+        logger.info("DEBUG: " + WorkerName + " - onPut() - the connector ID for " + connectorName + " is: " + connectorId);
+      }
+      return IWFInterface.UpdateService(vsIP, connectorId, newState);
+    })
+    .then (function () {
+      if (DEBUG) {
+        logger.info("DEBUG: " + WorkerName + " - onPut() - Put request pushed on iWF");
+      }
+      restOperation.setBody(newState);
+      athis.completeRestOperation(restOperation);
+    })
+    .catch (function (err) {
+      logger.info("DEBUG: " + WorkerName + " - onPut, something went wrong: " + JSON.stringify(err));
+      responseBody = "{ \"name\": \"" + serviceName + "\", \"value\": \"" + err + "\"}";
+      restOperation.setBody(responseBody);
+      restOperation.setStatusCode(400);
+      athis.completeRestOperation(restOperation);
+    });
 };
 
 /*
