@@ -1,0 +1,362 @@
+{
+	"info": {
+		"name": "AS3 Examples",
+		"_postman_id": "b34876f7-b14f-4614-90f2-688872eb1a2f",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Deploy AS3 INET_WEB443",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "saveHelperData",
+							"type": "any"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n     \"class\": \"ADC\",\n     \"schemaVersion\": \"0.0.1\",\n     \"id\": \"INET_WEB443\",\n     \"label\": \"INET_WEB443 Template\",\n     \"remark\": \"INET_WEB443\",\n     \"updateMode\": \"selective\",\n     \"Tenant1\": {\n         \"class\": \"Tenant\",\n         \"app1\": {\n             \"class\": \"Application\",\n             \"applicationType\": \"tcp\",\n             \"vsMain\": {\n                 \"class\": \"VS_TCP\",\n                 \"virtualAddresses\": [\n                     \"10.0.1.10\"\n                 ],\n                 \"virtualPort\": 443,\n                 \"pool\": \"app1_pool\",\n                 \"profileTCP\": { \"bigip\": \"/Common/tcp-wan-optimized\" }\n             },\n             \"app1_pool\": {\n                 \"class\": \"Pool\",\n                 \"monitors\": [\n                     \"http\"\n                 ],\n                 \"members\": [\n                     {\n                         \"servicePort\": 80,\n                         \"serverAddresses\": [\n                             \"192.0.1.10\",\n                             \"192.0.1.11\"\n                         ]\n                     }\n                 ]\n             }\n         }\n     }\n }"
+				},
+				"url": {
+					"raw": "https://{{bigip_a_mgmt}}/mgmt/shared/appsvcs/declare",
+					"protocol": "https",
+					"host": [
+						"{{bigip_a_mgmt}}"
+					],
+					"path": [
+						"mgmt",
+						"shared",
+						"appsvcs",
+						"declare"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Monitor_External",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "saveHelperData",
+							"type": "any"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"class\": \"ADC\",\n  \"schemaVersion\": \"0.0.1\",\n  \"id\": \"TEST_MONITOR_EXTERNAL\",\n  \"remark\": \"Test external monitor\",\n  \"controls\": {\n    \"class\": \"Controls\",\n    \"trace\": true,\n    \"logLevel\": \"debug\"\n  },\n  \"TEST_MONITOR_EXTERNAL\": {\n    \"class\": \"Tenant\",\n    \"verifiers\": {\n      \"13.x\": \"e0efc1782512a8fc141c60cb0cf02318ebfda402c3dd09e481108a70be344878\"\n    },\n    \"TEST_Monitor_External\": {\n      \"class\": \"Application\",\n      \"applicationType\": \"generic\",\n      \"mExternalArgExample\": {\n        \"class\": \"Monitor\",\n        \"label\": \"arg_example test\",\n        \"monitorType\": \"external\",\n        \"command\": \"/config/monitors/arg_example\",\n        \"arguments\": \"TestArgument\",\n        \"interval\": 5,\n        \"upInterval\": 0,\n        \"timeUntilUp\": 0,\n        \"timeout\": 16\n      }\n    }\n  }\n}\n\n"
+				},
+				"url": {
+					"raw": "https://{{bigip_a_mgmt}}/mgmt/shared/appsvcs/declare",
+					"protocol": "https",
+					"host": [
+						"{{bigip_a_mgmt}}"
+					],
+					"path": [
+						"mgmt",
+						"shared",
+						"appsvcs",
+						"declare"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Run AS3 Tests",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "saveHelperData",
+							"type": "any"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{}"
+				},
+				"url": {
+					"raw": "https://{{bigip_a_mgmt}}/mgmt/shared/appsvcs/test",
+					"protocol": "https",
+					"host": [
+						"{{bigip_a_mgmt}}"
+					],
+					"path": [
+						"mgmt",
+						"shared",
+						"appsvcs",
+						"test"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Deploy AS3 INET_WEB443_SSL",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "saveHelperData",
+							"type": "any"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n     \"class\": \"ADC\",\n     \"schemaVersion\": \"0.0.1\",\n     \"id\": \"INET_WEB443_SSL\",\n     \"label\": \"INET_WEB443_SSL Template\",\n     \"remark\": \"INET_WEB443_SSL\",\n     \"updateMode\": \"selective\",\n     \"Tenant1\": {\n         \"class\": \"Tenant\",\n         \"app1\": {\n             \"class\": \"Application\",\n             \"applicationType\": \"tcp\",\n             \"vsMain\": {\n                 \"class\": \"VS_TCP\",\n                 \"virtualAddresses\": [\n                     \"10.0.1.10\"\n                 ],\n                 \"virtualPort\": 443,\n                 \"pool\": \"app1_pool\",\n                 \"profileTCP\": { \"bigip\": \"/Common/tcp-wan-optimized\" },\n                 \"serverTLS\": \"app1_tls\"\n             },\n             \"app1_pool\": {\n                 \"class\": \"Pool\",\n                 \"monitors\": [\n                     \"http\"\n                 ],\n                 \"members\": [\n                     {\n                         \"servicePort\": 80,\n                         \"serverAddresses\": [\n                             \"192.0.1.10\",\n                             \"192.0.1.11\"\n                         ]\n                     }\n                 ]\n             },\n             \"app1_tls\": {\n                 \"class\": \"TLS_Server\",\n                 \"certificates\": [\n                     {\n                         \"certificate\": \"app1_keypair_1\"\n                     }\n                 ]\n             },\n             \"app1_keypair_1\": {\n                 \"class\": \"Certificate\",\n                 \"certificate\": \"<your_PEM_cert_here>\",\n                 \"privateKey\": \"<your_PEM_key_here>\",\n                 \"passphrase\": {\n                     \"ciphertext\": \"\",\n                     \"protected\": \"\"\n                 }\n             }\n         }\n     }\n }"
+				},
+				"url": {
+					"raw": "https://{{bigip_a_mgmt}}/mgmt/shared/appsvcs/declare",
+					"protocol": "https",
+					"host": [
+						"{{bigip_a_mgmt}}"
+					],
+					"path": [
+						"mgmt",
+						"shared",
+						"appsvcs",
+						"declare"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Deploy AS3 INET_WEB80",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "saveHelperData",
+							"type": "any"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n     \"class\": \"ADC\",\n     \"schemaVersion\": \"0.0.1\",\n     \"id\": \"INET_WEB80\",\n     \"label\": \"INET_WEB80 Template\",\n     \"remark\": \"INET_WEB80\",\n     \"updateMode\": \"selective\",\n     \"Tenant1\": {\n         \"class\": \"Tenant\",\n         \"app1\": {\n             \"class\": \"Application\",\n             \"applicationType\": \"http\",\n             \"vsMain\": {\n                 \"class\": \"VS_HTTP\",\n                 \"virtualAddresses\": [\n                     \"10.0.1.10\"\n                 ],\n                 \"pool\": \"app1_pool\",\n                 \"profileTCP\": { \"bigip\": \"/Common/tcp-wan-optimized\" }\n             },\n             \"app1_pool\": {\n                 \"class\": \"Pool\",\n                 \"monitors\": [\n                     \"http\"\n                 ],\n                 \"members\": [\n                     {\n                         \"servicePort\": 80,\n                         \"serverAddresses\": [\n                             \"192.0.1.10\",\n                             \"192.0.1.11\"\n                         ]\n                     }\n                 ]\n             }\n         }\n     },\n     \"Tenant2\": {\n         \"class\": \"Tenant\",\n         \"app2\": {\n             \"class\": \"Application\",\n             \"applicationType\": \"http\",\n             \"vsMain\": {\n                 \"class\": \"VS_HTTP\",\n                 \"virtualAddresses\": [\n                     \"10.0.1.11\"\n                 ],\n                 \"pool\": \"app2_pool\",\n                 \"profileTCP\": { \"bigip\": \"/Common/tcp-wan-optimized\" }\n             },\n             \"app2_pool\": {\n                 \"class\": \"Pool\",\n                 \"monitors\": [\n                     \"http\"\n                 ],\n                 \"members\": [\n                     {\n                         \"servicePort\": 80,\n                         \"serverAddresses\": [\n                             \"192.0.1.12\",\n                             \"192.0.1.13\"\n                         ]\n                     }\n                 ]\n             }\n         },\n         \"app3\": {\n             \"class\": \"Application\",\n             \"applicationType\": \"http\",\n             \"vsMain\": {\n                 \"class\": \"VS_HTTP\",\n                 \"virtualAddresses\": [\n                     \"10.0.1.12\"\n                 ],\n                 \"pool\": \"app3_pool\",\n                 \"profileTCP\": { \"bigip\": \"/Common/tcp-wan-optimized\" }\n             },\n             \"app3_pool\": {\n                 \"class\": \"Pool\",\n                 \"monitors\": [\n                     \"http\"\n                 ],\n                 \"members\": [\n                     {\n                         \"servicePort\": 80,\n                         \"serverAddresses\": [\n                             \"192.0.1.14\",\n                             \"192.0.1.15\"\n                         ]\n                     }\n                 ]\n             }\n         }         \n     }\n }"
+				},
+				"url": {
+					"raw": "https://{{bigip_a_mgmt}}/mgmt/shared/appsvcs/declare",
+					"protocol": "https",
+					"host": [
+						"{{bigip_a_mgmt}}"
+					],
+					"path": [
+						"mgmt",
+						"shared",
+						"appsvcs",
+						"declare"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Deploy AS3 INET_WEB80 Copy",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "admin",
+							"type": "string"
+						},
+						{
+							"key": "saveHelperData",
+							"type": "any"
+						},
+						{
+							"key": "showPassword",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n     \"class\": \"ADC\",\n     \"schemaVersion\": \"0.0.1\",\n     \"id\": \"INET_WEB80\",\n     \"label\": \"INET_WEB80 Template\",\n     \"remark\": \"INET_WEB80\",\n     \"updateMode\": \"selective\",\n     \"Tenant1\": {\n         \"class\": \"Tenant\"\n     },\n     \"Tenant2\": {\n         \"class\": \"Tenant\",\n         \"app2\": {\n             \"class\": \"Application\",\n             \"applicationType\": \"http\",\n             \"vsMain\": {\n                 \"class\": \"VS_HTTP\",\n                 \"virtualAddresses\": [\n                     \"10.0.1.11\"\n                 ],\n                 \"pool\": \"app2_pool\",\n                 \"profileTCP\": { \"bigip\": \"/Common/tcp-wan-optimized\" }\n             },\n             \"app2_pool\": {\n                 \"class\": \"Pool\",\n                 \"monitors\": [\n                     \"http\"\n                 ],\n                 \"members\": [\n                     {\n                         \"servicePort\": 80,\n                         \"serverAddresses\": [\n                             \"192.0.1.12\",\n                             \"192.0.1.13\"\n                         ]\n                     }\n                 ]\n             }\n         },\n         \"app3\": {\n             \"class\": \"Application\",\n             \"applicationType\": \"http\",\n             \"vsMain\": {\n                 \"class\": \"VS_HTTP\",\n                 \"virtualAddresses\": [\n                     \"10.0.1.12\"\n                 ],\n                 \"pool\": \"app3_pool\",\n                 \"profileTCP\": { \"bigip\": \"/Common/tcp-wan-optimized\" }\n             },\n             \"app3_pool\": {\n                 \"class\": \"Pool\",\n                 \"monitors\": [\n                     \"http\"\n                 ],\n                 \"members\": [\n                     {\n                         \"servicePort\": 80,\n                         \"serverAddresses\": [\n                             \"192.0.1.14\",\n                             \"192.0.1.15\"\n                         ]\n                     }\n                 ]\n             }\n         }         \n     }\n }"
+				},
+				"url": {
+					"raw": "https://{{bigip_a_mgmt}}/mgmt/shared/appsvcs/declare",
+					"protocol": "https",
+					"host": [
+						"{{bigip_a_mgmt}}"
+					],
+					"path": [
+						"mgmt",
+						"shared",
+						"appsvcs",
+						"declare"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "be4045bb-f6ba-400e-873a-d1db231c0e18",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "274ea965-ac91-4aec-aa0b-3050ae947a0a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
