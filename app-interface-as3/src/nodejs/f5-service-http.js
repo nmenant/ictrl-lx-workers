@@ -10,12 +10,6 @@ var serviceHTTPAS3Func = require("../utils/service-http-as3-utils.js");
 var DEBUG = true;
 var WorkerName = "f5_service_http";
 
-// specify whether you want infoblox to handle the VS IP or if it will be provided by the consumer
-var useInfoblox = false;
-// subnet is used with infoblox to specify in which subnet you need an IP -- SHOULD BE MOVED INTO API CALL
-var subnet = "10.100.60.0/24";
-
-
 function f5_service_http() {
 }
 
@@ -44,12 +38,12 @@ f5_service_http.prototype.onGet = function (restOperation) {
 */
 f5_service_http.prototype.onPost = function(restOperation) {
   var newState = restOperation.getBody();
-  var BIGIPIP = newState.clustername;
+/*  var BIGIPIP = newState.clustername;
   var serviceName = newState.name;
   var tenantName = newState.tenant;
   var poolData = newState["app-data"];
   var serviceIP;
-
+*/
 
   if (DEBUG) {
     logger.info(WorkerName + " - onPost()");
@@ -58,20 +52,12 @@ f5_service_http.prototype.onPost = function(restOperation) {
   athis = this;
 
   if (DEBUG) {
-    logger.info("DEBUG: " + WorkerName + " - onPost() - calling HTTP app interface worker with name: " + serviceName);
+    logger.info("DEBUG: " + WorkerName + " - onPost() - calling HTTP app interface worker");
   }
 
   var serviceHTTPAS3Interface = new serviceHTTPAS3Func();
 
-  if (useInfoblox) {
-    var IPAMQuery = new AppInterfaceIPAMFunc(serviceName, subnet);
-  } else {
-    serviceIP = newState["service-ip"];
-
-    if (DEBUG) {
-      logger.info("DEBUG: " + WorkerName + " - onPost, the service IP is: " + serviceIP);
-    }
-    serviceHTTPAS3Interface.DeployService(BIGIPIP, serviceName, tenantName, poolData, serviceIP)
+    serviceHTTPAS3Interface.DeployService(newState)
     .then (function() {
       athis.completeRestOperation(restOperation);
     })
@@ -82,7 +68,6 @@ f5_service_http.prototype.onPost = function(restOperation) {
       restOperation.setStatusCode(400);
       athis.completeRestOperation(restOperation);
     });
-  }
 };
 
 /*
