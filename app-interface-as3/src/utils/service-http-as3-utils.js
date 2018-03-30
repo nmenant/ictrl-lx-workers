@@ -1,9 +1,8 @@
 /*
 * This file contains the different function that will be used to
-* deploy services on iWF
+* deploy services through AS3
 * here we have the following functions:
-*     - Deploy a service on iWF
-*     - Contact another iControl LX extension to communicate with infoblox
+*     - Deploy a HTTP service 
 */
 
 // to allow connection to services that have self signed certificate
@@ -25,7 +24,7 @@ function ServiceHTTPAS3Utils () {
   var AS3Password = "admin"
   var authAS3 = 'Basic ' + new Buffer(AS3Login + ':' + AS3Password).toString('base64');
 
-  
+
 
 this.DeployService = function (BIGIPIP, serviceName, tenantName, poolData, serviceIP) {
   return new Promise (
@@ -38,7 +37,6 @@ this.DeployService = function (BIGIPIP, serviceName, tenantName, poolData, servi
       /*
       * we create the service definition to deploy the service through AS3
       */
-      //      var updateRestBody = "{ \"name\": \"" + serviceName + "\", \"tenantTemplateReference\": { \"link\": \"https://localhost/mgmt/cm/cloud/tenant/templates/iapp/" + templateName + "\"}, \"tenantReference\": { \"link\": \"https://localhost/mgmt/cm/cloud/tenants/" + tenantName + "\"},\"vars\": [";
       var jsonPoolDataMembers = JSON.stringify(poolData.members,' ','\t');
       var jsonPoolDataMonitors = JSON.stringify(poolData.monitors,' ','\t');
       var createRestBody = `{

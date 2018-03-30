@@ -1,7 +1,7 @@
 /**
-* This iControl LX extension will create a declarative REST my_interface
-* to deploy services. In this example, we will use an IPAM solution called
-* infoblox to retrieve the service external IP
+* This iControl LX extension will create a declarative REST API
+* to deploy HTTP services. In this example, we will use an IPAM solution called
+* infoblox to retrieve the service external IP as an option
 */
 
 var logger = require('f5-logger').getInstance();
@@ -12,7 +12,7 @@ var WorkerName = "f5_service_http";
 
 // specify whether you want infoblox to handle the VS IP or if it will be provided by the consumer
 var useInfoblox = false;
-// subnet is used with infoblox to specify in which subnet you need an IP
+// subnet is used with infoblox to specify in which subnet you need an IP -- SHOULD BE MOVED INTO API CALL
 var subnet = "10.100.60.0/24";
 
 
