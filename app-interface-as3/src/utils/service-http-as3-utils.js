@@ -2,7 +2,7 @@
 * This file contains the different function that will be used to
 * deploy services through AS3
 * here we have the following functions:
-*     - Deploy a HTTP service 
+*     - Deploy a HTTP service
 */
 
 // to allow connection to services that have self signed certificate
@@ -82,7 +82,7 @@ this.DeployService = function (BIGIPIP, serviceName, tenantName, poolData, servi
       var jsonBody = JSON.parse(createRestBody);
       var options = {
         method: 'POST',
-        url: 'https://192.168.143.26/mgmt/shared/appsvcs/declare',
+        url: 'https://localhost/mgmt/shared/appsvcs/declare',
         headers:
         {
           "authorization": authAS3,
