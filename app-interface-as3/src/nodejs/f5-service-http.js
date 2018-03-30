@@ -36,83 +36,7 @@ f5_service_http.prototype.onStart = function (success) {
 * Handle GET requests
 */
 f5_service_http.prototype.onGet = function (restOperation) {
-/*  var uriValue = restOperation.getUri();
-  var serviceName = uriValue.path.toString().split("/")[4];
-  var iWFServiceDefinition;
-  var iWFConnectorName;
 
-  athis = this;
-
-  if (DEBUG) {
-    logger.info("DEBUG: " + WorkerName + " - onGet - uri is " + serviceName);
-  }
-  var IWFInterface = new AppInterfaceIWFFunc();
-  IWFInterface.GetService(serviceName)
-  .then (function (body) {
-    if (DEBUG) {
-      logger.info("DEBUG: " + WorkerName + " - onGet - body is " + body);
-    }
-    iWFServiceDefinition = JSON.parse(body);
-
-    var connectorId = iWFServiceDefinition.properties[0].value.toString().split("/");
-    connectorId = connectorId[connectorId.length - 1];
-    if (DEBUG) {
-      logger.info("DEBUG: " + WorkerName + " - onGet - GetService/connectorId is: " + connectorId);
-    }
-    return IWFInterface.GetConnectorName(connectorId);
-  })
-  .then (function (connectorName) {
-    if (DEBUG) {
-      logger.info("DEBUG: " + WorkerName + " - onGet - connectorName is " + connectorName);
-    }
-    var templateName = iWFServiceDefinition.tenantTemplateReference.link.toString().split("/");
-    templateName = templateName[templateName.length - 1];
-    var varsList = iWFServiceDefinition.vars;
-    var tablesList = iWFServiceDefinition.tables;
-    //We have all the date to build the response to the get request
-    var restBody = "{ \"name\": \"" + serviceName + "\", \"template\": \"" + templateName + "\",";
-
-    if ( !useInfoblox ) {
-      for (var k=0; k < varsList.length; k++) {
-        if (varsList[k].name == "pool__addr") {
-          restBody += "\"service-ip\": \"" + varsList[k].value + "\",";
-        }
-      }
-    }
-    restBody += "\"clustername\": \"" + connectorName + "\",\"app-data\": [";
-
-    // reminder: var varsList  -> contains all the vars that were defined in our app definition
-    for (var j=0; j < varsList.length; j++) {
-      if (varsList[j].name != "pool__addr") {
-        if (j > 0){
-          restBody += ",";
-        }
-        composeBody(varsList[j]);
-      }
-    }
-    function composeBody(message){
-      restBody += " { \"name\" : \"" + message.name + "\", \"value\" : \"" + message.value + "\"}";
-    }
-
-    restBody += "], \"servers-data\": ";
-    restBody += JSON.stringify(tablesList,' ','\t');
-
-    //close our payload
-    restBody += "}";
-    if (DEBUG === true) {
-      logger.info ("DEBUG: " + WorkerName + " onGet - response service BODY is: " + JSON.stringify(restBody,' ','\t'));
-    }
-    restOperation.setBody(restBody);
-    athis.completeRestOperation(restOperation);
-  })
-  .catch (function (err) {
-    logger.info("DEBUG: " + WorkerName + " - onGet, GetService - something went wrong: " + JSON.stringify(err));
-    responseBody = "{ \"name\": \"" + serviceName + "\", \"value\": \"" + err + "\"}";
-    restOperation.setBody(responseBody);
-    restOperation.setStatusCode(400);
-    athis.completeRestOperation(restOperation);
-  });
-  */
 };
 
 /*
@@ -165,46 +89,7 @@ f5_service_http.prototype.onPost = function(restOperation) {
 * Handle PUT requests
 */
 f5_service_http.prototype.onPut = function(restOperation) {
-  var newState = restOperation.getBody();
-  var serviceName = newState.name;
-  var connectorName = newState.clustername;
-  var vsIP;
-  var athis = this;
 
-  if (DEBUG) {
-    logger.info("DEBUG: " + WorkerName + " - onPut()");
-  }
-
-/*  var IWFInterface = new AppInterfaceIWFFunc();
-  IWFInterface.GetServiceVSIP(serviceName)
-  .then (function (myVSIP) {
-    if (DEBUG) {
-      logger.info("DEBUG: " + WorkerName + " - onPut() - the VS IP for " + serviceName + " is: " + myVSIP);
-    }
-    vsIP = myVSIP;
-    return IWFInterface.GetConnectorID(connectorName);
-  })
-  .then (function (connectorId) {
-    if (DEBUG) {
-      logger.info("DEBUG: " + WorkerName + " - onPut() - the connector ID for " + connectorName + " is: " + connectorId);
-    }
-    return IWFInterface.UpdateService(vsIP, connectorId, newState);
-  })
-  .then (function () {
-    if (DEBUG) {
-      logger.info("DEBUG: " + WorkerName + " - onPut() - Put request pushed on iWF");
-    }
-    restOperation.setBody(newState);
-    athis.completeRestOperation(restOperation);
-  })
-  .catch (function (err) {
-    logger.info("DEBUG: " + WorkerName + " - onPut, something went wrong: " + JSON.stringify(err));
-    responseBody = "{ \"name\": \"" + serviceName + "\", \"value\": \"" + err + "\"}";
-    restOperation.setBody(responseBody);
-    restOperation.setStatusCode(400);
-    athis.completeRestOperation(restOperation);
-  });
-  */
 };
 
 /*
@@ -223,40 +108,7 @@ f5_service_http.prototype.onPatch = function(restOperation) {
 * Handle DELETE requests
 */
 f5_service_http.prototype.onDelete = function(restOperation) {
-  var uriValue = restOperation.getUri();
-  var serviceName = uriValue.path.toString().split("/")[4];
-  athis = this;
 
-  if (DEBUG) {
-    logger.info("DEBUG: " + WorkerName + " - onDelete - service to remove is: " + serviceName);
-  }
-/*
-  var IPAMQuery = new AppInterfaceIPAMFunc(serviceName, subnet);
-  var IWFInterface = new AppInterfaceIWFFunc();
-
-  IWFInterface.DeleteService(serviceName)
-  .then (function () {
-    if (DEBUG) {
-      logger.info("DEBUG: " + WorkerName + " - onDelete - service has been removed from iWF");
-    }
-    if (useInfoblox) {
-      return IPAMQuery.ReleaseIP(serviceName);
-    }
-  })
-  .then (function () {
-    if (DEBUG) {
-      logger.info("DEBUG: " + WorkerName + " - onDelete - released IP from IPAM");
-    }
-    athis.completeRestOperation(restOperation);
-  })
-  .catch (function (err) {
-    logger.info("DEBUG: " + WorkerName + " - onDelete, something went wrong: " + JSON.stringify(err));
-    responseBody = "{ \"name\": \"" + serviceName + "\", \"value\": \"" + err + "\"}";
-    restOperation.setBody(responseBody);
-    restOperation.setStatusCode(400);
-    athis.completeRestOperation(restOperation);
-  });
-  */
 };
 /**
 * handle /example HTTP request
@@ -265,60 +117,44 @@ f5_service_http.prototype.getExampleState = function () {
 
   if (useInfoblox) {
     return {
-      "name": "my-app-name",
-      "template": "f5-http-lb",
-      "clustername": "BIG-IP-student",
-      "app-data": [
-        {
-          "name": "pool__port",
-          "value": "80"
-        }
-      ],
-      "servers-data": [{
-        "name": "pool__Members",
-        "columns": [
-          "IPAddress",
-          "State"
+      "name": "my_http_service",
+      "clustername": "localhost",
+      "tenant" : "tenant_Nicolas",
+      "app-data": {
+    	"monitors": [
+        	"http"
         ],
-        "rows": [
-          [
-            "10.1.10.10",
-            "enabled"
-          ], [
-            "10.1.10.11",
-            "enabled"
-          ]
+        "members": [
+        	{
+            	"servicePort": 80,
+            	"serverAddresses": [
+                	"192.0.1.10",
+                	"192.0.1.11"
+                ]
+            }
         ]
-      }]
+      }
     };
   } else {
     return {
-      "name": "my-app-name",
-      "template": "f5-http-lb",
-      "service-ip": "10.1.50.80",
-      "clustername": "BIG-IP-student",
-      "app-data": [
-        {
-          "name": "pool__port",
-          "value": "80"
-        }
-      ],
-      "servers-data": [{
-        "name": "pool__Members",
-        "columns": [
-          "IPAddress",
-          "State"
+      "name": "my_http_service",
+      "clustername": "localhost",
+      "service-ip": "10.1.0.80",
+      "tenant" : "tenant_Nicolas",
+      "app-data": {
+    	"monitors": [
+        	"http"
         ],
-        "rows": [
-          [
-            "10.1.10.10",
-            "enabled"
-          ], [
-            "10.1.10.11",
-            "enabled"
-          ]
+        "members": [
+        	{
+            	"servicePort": 80,
+            	"serverAddresses": [
+                	"192.0.1.10",
+                	"192.0.1.11"
+                ]
+            }
         ]
-      }]
+      }
     };
   }
 };
