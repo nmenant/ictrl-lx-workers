@@ -1,13 +1,13 @@
 {
 	"info": {
 		"_postman_id": "90bb0476-22e3-0b8c-18a8-2ba10097ba9d",
-		"name": "My-App-Interface-HTTP-AS3",
+		"name": "My-App-Interface-AS3",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Create-Service-HTTP",
-			"description": "this folder will create a HTTP service automatically via the custom application interface",
+			"name": "Manage-Services",
+			"description": "this folder will create some services automatically via the custom application interface",
 			"item": [
 				{
 					"name": "Request a Token from iWorkflow",
@@ -131,10 +131,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"id\": \"{{id}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"tenant\" : \"{{tenant-name}}\",\n  \"app-data\": [\n  \t{   \n  \t\t\"name\": \"my_service_web\",\n  \t\t\"service-ip\": \"{{service-ip}}\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"{{server1-addr}}\",\n            \t\t\"{{server2-addr}}\"\n            \t]\n        \t}\n    \t]\n\t}\n  ]\n}"
+							"raw": "{\n  \"id\": \"{{id}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"tenant\" : \"{{tenant-name}}\",\n  \"app-data\": [\n  \t{   \n  \t\t\"name\": \"my_service_web\",\n  \t\t\"service-template\": \"web-service\",\n  \t\t\"service-ip\": \"{{service-ip}}\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"{{server1-addr}}\",\n            \t\t\"{{server2-addr}}\"\n            \t]\n        \t}\n    \t]\n\t}\n  ]\n}"
 						},
 						"url": {
-							"raw": "https://{{as3_mgmt}}/mgmt/shared/workers/my-service-catalog/f5-service-http",
+							"raw": "https://{{as3_mgmt}}/mgmt/shared/workers/my_service_catalog",
 							"protocol": "https",
 							"host": [
 								"{{as3_mgmt}}"
@@ -143,8 +143,7 @@
 								"mgmt",
 								"shared",
 								"workers",
-								"my-service-catalog",
-								"f5-service-http"
+								"my_service_catalog"
 							]
 						}
 					},
@@ -177,10 +176,10 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"id\": \"{{id}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"tenant\" : \"{{tenant-name}}\",\n  \"app-data\": [\n  \t{   \n  \t\t\"name\": \"my_service_web\",\n  \t\t\"service-ip\": \"{{service-ip}}\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"{{server1-addr}}\",\n            \t\t\"{{server2-addr}}\"\n            \t]\n        \t}\n    \t]\n\t},\n\t{   \n  \t\t\"name\": \"my_web_app\",\n  \t\t\"service-ip\": \"{{service-ip2}}\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"1.1.1.1\",\n            \t\t\"1.2.3.4\"\n            \t]\n        \t}\n    \t]\n\t}\n  ]\n}"
+							"raw": "{\n  \"id\": \"{{id}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"tenant\" : \"{{tenant-name}}\",\n  \"app-data\": [\n  \t{   \n  \t\t\"name\": \"my_service_web\",\n  \t\t\"service-template\": \"web-service\",\n  \t\t\"service-ip\": \"{{service-ip}}\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"{{server1-addr}}\",\n            \t\t\"{{server2-addr}}\"\n            \t]\n        \t}\n    \t]\n\t},\n\t{   \n  \t\t\"name\": \"my_web_app\",\n  \t\t\"service-ip\": \"{{service-ip2}}\",\n  \t\t\"service-template\": \"web-service\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"1.1.1.1\",\n            \t\t\"1.2.3.4\"\n            \t]\n        \t}\n    \t]\n\t}\n  ]\n}"
 						},
 						"url": {
-							"raw": "https://{{as3_mgmt}}/mgmt/shared/workers/my-service-catalog/f5-service-http",
+							"raw": "https://{{as3_mgmt}}/mgmt/shared/workers/my_service_catalog",
 							"protocol": "https",
 							"host": [
 								"{{as3_mgmt}}"
@@ -189,8 +188,97 @@
 								"mgmt",
 								"shared",
 								"workers",
-								"my-service-catalog",
-								"f5-service-http"
+								"my_service_catalog"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create HTTP and TCP Services ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-F5-Auth-Token",
+								"value": "{{as3_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{id}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"tenant\" : \"{{tenant-name}}\",\n  \"app-data\": [\n  \t{   \n  \t\t\"name\": \"my_service_web\",\n  \t\t\"service-template\": \"web-service\",\n  \t\t\"service-ip\": \"{{service-ip}}\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"{{server1-addr}}\",\n            \t\t\"{{server2-addr}}\"\n            \t]\n        \t}\n    \t]\n\t},\n\t{   \n  \t\t\"name\": \"my_tcp_app\",\n  \t\t\"service-ip\": \"{{service-ip2}}\",\n  \t\t\"service-port\": \"22\",\n  \t\t\"service-template\": \"L4-service\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"1.1.1.1\",\n            \t\t\"1.2.3.4\"\n            \t]\n        \t}\n    \t]\n\t}\n  ]\n}"
+						},
+						"url": {
+							"raw": "https://{{as3_mgmt}}/mgmt/shared/workers/my_service_catalog",
+							"protocol": "https",
+							"host": [
+								"{{as3_mgmt}}"
+							],
+							"path": [
+								"mgmt",
+								"shared",
+								"workers",
+								"my_service_catalog"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "clear tenant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "X-F5-Auth-Token",
+								"value": "{{as3_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"{{id}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"tenant\" : \"{{tenant-name}}\",\n  \"app-data\": [\n  \t\n  ]\n}"
+						},
+						"url": {
+							"raw": "https://{{as3_mgmt}}/mgmt/shared/workers/my_service_catalog",
+							"protocol": "https",
+							"host": [
+								"{{as3_mgmt}}"
+							],
+							"path": [
+								"mgmt",
+								"shared",
+								"workers",
+								"my_service_catalog"
 							]
 						}
 					},
@@ -242,202 +330,12 @@
 					},
 					"response": []
 				}
-			]
-		},
-		{
-			"name": "Update-Service-HTTP - NOT DONE",
-			"description": "this folder will update a HTTP service automatically via the custom application interface",
-			"item": [
-				{
-					"name": "Request a Token from iWorkflow",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
-									"var respData = JSON.parse(responseBody);",
-									"",
-									"tests[\"response has token: \" +respData.token.token] = respData.token.token;",
-									"",
-									"postman.setEnvironmentVariable('iwf_token',respData.token.token);",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"username\": {{iwf_username}},\n  \"password\": {{iwf_password}},\n  \"loginProvidername\": \"tmos\"\n}"
-						},
-						"url": {
-							"raw": "https://{{iwf_mgmt}}/mgmt/shared/authn/login",
-							"protocol": "https",
-							"host": [
-								"{{iwf_mgmt}}"
-							],
-							"path": [
-								"mgmt",
-								"shared",
-								"authn",
-								"login"
-							]
-						},
-						"description": "Using Basic Auth, request a token from the iWorkflow platform."
-					},
-					"response": []
-				},
-				{
-					"name": "Increase Auth Token Timeout",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
-									"var respData = JSON.parse(responseBody);",
-									"tests[\"Auth Token timeout is: \" +respData.timeout] = respData.timeout;",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "X-F5-Auth-Token",
-								"value": "{{iwf_token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"timeout\":\"36000\"\n}"
-						},
-						"url": {
-							"raw": "https://{{iwf_mgmt}}/mgmt/shared/authz/tokens/{{iwf_token}}",
-							"protocol": "https",
-							"host": [
-								"{{iwf_mgmt}}"
-							],
-							"path": [
-								"mgmt",
-								"shared",
-								"authz",
-								"tokens",
-								"{{iwf_token}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update HTTP Service - disable a server",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;"
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "X-F5-Auth-Token",
-								"value": "{{iwf_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{my-app-name}}\",\n  \"service-ip\": \"{{service-ip}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"template\" : \"f5-http-lb\",\n  \"app-data\": [\n                {\n                    \"name\": \"pool__port\",\n                    \"value\": \"{{service-port}}\"\n                }\n    ],\n    \"servers-data\": [{\n        \"name\": \"pool__Members\",\n        \"columns\": [\n            \"IPAddress\",\n            \"State\"\n        ],\n        \"rows\": [\n          [ \n            \"{{server1-addr}}\",\n            \"disabled\"\n          ], [\n            \"{{server2-addr}}\",\n            \"enabled\"\n          ]\n        ]\n    }]\n}"
-						},
-						"url": {
-							"raw": "https://{{iwf_mgmt}}/mgmt/shared/workers/my-app-interface",
-							"protocol": "https",
-							"host": [
-								"{{iwf_mgmt}}"
-							],
-							"path": [
-								"mgmt",
-								"shared",
-								"workers",
-								"my-app-interface"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET HTTP Service ",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;"
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "X-F5-Auth-Token",
-								"value": "{{iwf_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{my-app-name}}\",\n  \"template\" : \"f5-http-lb\",\n  \"vars\": [\n                {\n                    \"name\": \"pool__port\",\n                    \"value\": \"{{service-port}}\"\n                }\n    ],\n    \"tables\": [{\n        \"name\": \"pool__Members\",\n        \"columns\": [\n            \"IPAddress\",\n            \"State\"\n        ],\n        \"rows\": [\n          [ \n            \"{{server1-addr}}\",\n            \"enabled\"\n          ], [\n            \"{{server2-addr}}\",\n            \"enabled\"\n          ]\n        ]\n    }]\n}"
-						},
-						"url": {
-							"raw": "https://{{iwf_mgmt}}/mgmt/shared/my-app-interface/{{my-app-name}}",
-							"protocol": "https",
-							"host": [
-								"{{iwf_mgmt}}"
-							],
-							"path": [
-								"mgmt",
-								"shared",
-								"my-app-interface",
-								"{{my-app-name}}"
-							]
-						}
-					},
-					"response": []
-				}
 			],
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "985526df-a4a2-4c06-9576-0540a2d4fb2d",
+						"id": "e45e7089-b05b-4187-9c3a-5b4ea4beb367",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -447,164 +345,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "ac1de2e8-1a0d-45e3-9c77-ae8056a4ef9b",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			]
-		},
-		{
-			"name": "Delete-Service - NOT DONE",
-			"description": null,
-			"item": [
-				{
-					"name": "Request a Token from iWorkflow",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
-									"var respData = JSON.parse(responseBody);",
-									"",
-									"tests[\"response has token: \" +respData.token.token] = respData.token.token;",
-									"",
-									"postman.setEnvironmentVariable('iwf_token',respData.token.token);",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"username\": {{iwf_username}},\n  \"password\": {{iwf_password}},\n  \"loginProvidername\": \"tmos\"\n}"
-						},
-						"url": {
-							"raw": "https://{{iwf_mgmt}}/mgmt/shared/authn/login",
-							"protocol": "https",
-							"host": [
-								"{{iwf_mgmt}}"
-							],
-							"path": [
-								"mgmt",
-								"shared",
-								"authn",
-								"login"
-							]
-						},
-						"description": "Using Basic Auth, request a token from the iWorkflow platform."
-					},
-					"response": []
-				},
-				{
-					"name": "Increase Auth Token Timeout",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
-									"var respData = JSON.parse(responseBody);",
-									"tests[\"Auth Token timeout is: \" +respData.timeout] = respData.timeout;",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "X-F5-Auth-Token",
-								"value": "{{iwf_token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"timeout\":\"36000\"\n}"
-						},
-						"url": {
-							"raw": "https://{{iwf_mgmt}}/mgmt/shared/authz/tokens/{{iwf_token}}",
-							"protocol": "https",
-							"host": [
-								"{{iwf_mgmt}}"
-							],
-							"path": [
-								"mgmt",
-								"shared",
-								"authz",
-								"tokens",
-								"{{iwf_token}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Service",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "X-F5-Auth-Token",
-								"value": "{{iwf_token}}"
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "https://{{iwf_mgmt}}/mgmt/shared/workers/my-app-interface/{{my-app-name}}",
-							"protocol": "https",
-							"host": [
-								"{{iwf_mgmt}}"
-							],
-							"path": [
-								"mgmt",
-								"shared",
-								"workers",
-								"my-app-interface",
-								"{{my-app-name}}"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "c6b54f84-54d5-4b00-9021-3be89d4f919f",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "5965f25e-72e5-4ea9-acc6-8c6a1938a91b",
+						"id": "aeb5c61c-3d37-485a-8a12-868fa40542fb",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -742,7 +483,7 @@
 							"raw": "{\n  \"name\" : \"{{my-app-name}}\"\n}"
 						},
 						"url": {
-							"raw": "https://{{as3_mgmt}}/mgmt/shared/workers/my-service-catalog/f5-service-http/example",
+							"raw": "https://{{as3_mgmt}}/mgmt/shared/workers/my_service_catalog/example",
 							"protocol": "https",
 							"host": [
 								"{{as3_mgmt}}"
@@ -751,8 +492,7 @@
 								"mgmt",
 								"shared",
 								"workers",
-								"my-service-catalog",
-								"f5-service-http",
+								"my_service_catalog",
 								"example"
 							]
 						}
