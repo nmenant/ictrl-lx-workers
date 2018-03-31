@@ -176,7 +176,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"id\": \"{{id}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"tenant\" : \"{{tenant-name}}\",\n  \"app-data\": [\n  \t{   \n  \t\t\"name\": \"my_service_web\",\n  \t\t\"service-template\": \"web-service\",\n  \t\t\"service-ip\": \"{{service-ip}}\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"{{server1-addr}}\",\n            \t\t\"{{server2-addr}}\"\n            \t]\n        \t}\n    \t]\n\t},\n\t{   \n  \t\t\"name\": \"my_web_app\",\n  \t\t\"service-ip\": \"{{service-ip2}}\",\n  \t\t\"service-template\": \"web-service\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"1.1.1.1\",\n            \t\t\"1.2.3.4\"\n            \t]\n        \t}\n    \t]\n\t}\n  ]\n}"
+							"raw": "{\n  \"id\": \"{{id}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"tenant\" : \"{{tenant-name}}\",\n  \"app-data\": [\n  \t{   \n  \t\t\"name\": \"my_service_web\",\n  \t\t\"service-template\": \"web-service\",\n  \t\t\"service-ip\": \"{{service-ip}}\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"{{server1-addr}}\",\n            \t\t\"{{server2-addr}}\"\n            \t]\n        \t}\n    \t]\n\t},\n\t{   \n  \t\t\"name\": \"my_web_app\",\n  \t\t\"service-ip\": \"{{service-ip2}}\",\n  \t\t\"service-template\": \"web-service\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"172.16.2.202\",\n            \t\t\"172.16.2.203\"\n            \t]\n        \t}\n    \t]\n\t}\n  ]\n}"
 						},
 						"url": {
 							"raw": "https://{{as3_mgmt}}/mgmt/shared/workers/my_service_catalog",
@@ -221,7 +221,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"id\": \"{{id}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"tenant\" : \"{{tenant-name}}\",\n  \"app-data\": [\n  \t{   \n  \t\t\"name\": \"my_service_web\",\n  \t\t\"service-template\": \"web-service\",\n  \t\t\"service-ip\": \"{{service-ip}}\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"{{server1-addr}}\",\n            \t\t\"{{server2-addr}}\"\n            \t]\n        \t}\n    \t]\n\t},\n\t{   \n  \t\t\"name\": \"my_tcp_app\",\n  \t\t\"service-ip\": \"{{service-ip2}}\",\n  \t\t\"service-port\": \"22\",\n  \t\t\"service-template\": \"L4-service\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"1.1.1.1\",\n            \t\t\"1.2.3.4\"\n            \t]\n        \t}\n    \t]\n\t}\n  ]\n}"
+							"raw": "{\n  \"id\": \"{{id}}\",\n  \"clustername\": \"{{connector-name}}\",\n  \"tenant\" : \"{{tenant-name}}\",\n  \"app-data\": [\n  \t{   \n  \t\t\"name\": \"my_service_web\",\n  \t\t\"service-template\": \"web-service\",\n  \t\t\"service-ip\": \"{{service-ip}}\",\n  \t\t\"monitors\": [\n    \t\t\"http\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"{{server1-addr}}\",\n            \t\t\"{{server2-addr}}\"\n            \t]\n        \t}\n    \t]\n\t},\n\t{   \n  \t\t\"name\": \"my_tcp_app\",\n  \t\t\"service-ip\": \"{{service-ip2}}\",\n  \t\t\"service-port\": \"22\",\n  \t\t\"service-template\": \"L4-service\",\n  \t\t\"monitors\": [\n    \t\t\"tcp\"\n    \t],\n    \t\"members\": [\n    \t\t{\n        \t\t\"servicePort\": {{service-port}},\n        \t\t\"serverAddresses\": [\n            \t\t\"172.16.2.202\",\n            \t\t\"172.16.2.203\"\n            \t]\n        \t}\n    \t]\n\t}\n  ]\n}"
 						},
 						"url": {
 							"raw": "https://{{as3_mgmt}}/mgmt/shared/workers/my_service_catalog",
@@ -279,52 +279,6 @@
 								"shared",
 								"workers",
 								"my_service_catalog"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET HTTP Service ",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;"
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "X-F5-Auth-Token",
-								"value": "{{iwf_token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"{{my-app-name}}\",\n  \"template\" : \"f5-http-lb\",\n  \"vars\": [\n                {\n                    \"name\": \"pool__port\",\n                    \"value\": \"{{service-port}}\"\n                }\n    ],\n    \"tables\": [{\n        \"name\": \"pool__Members\",\n        \"columns\": [\n            \"IPAddress\",\n            \"State\"\n        ],\n        \"rows\": [\n          [ \n            \"{{server1-addr}}\",\n            \"enabled\"\n          ], [\n            \"{{server2-addr}}\",\n            \"enabled\"\n          ]\n        ]\n    }]\n}"
-						},
-						"url": {
-							"raw": "https://{{iwf_mgmt}}/mgmt/shared/workers/my-app-interface/{{my-app-name}}",
-							"protocol": "https",
-							"host": [
-								"{{iwf_mgmt}}"
-							],
-							"path": [
-								"mgmt",
-								"shared",
-								"workers",
-								"my-app-interface",
-								"{{my-app-name}}"
 							]
 						}
 					},
