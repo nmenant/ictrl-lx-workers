@@ -35,49 +35,6 @@ function ServiceAS3Utils () {
     return new Promise (
       function (resolve, reject) {
 
-        function parseAppDefinition(appDetails, counter) {
-          return new Promise (function (resolve, reject) {
-            if (DEBUG) {
-              logger.info("DEBUG: ServiceAS3Utils -  function parseAppDefinition - service:  " + appDetails["service-template"] + " counter: " + counter);
-            }
-            if (appData[i]["service-template"].toString() === "web-service") {
-              logger.info("ServiceAS3Utils function parseAppDefinition - service template: " + appDetails["service-template"] + " triggered");
-
-              serviceHTTPAS3Interface.createHTTPAS3ServiceDefinition(appDetails)
-              .then (function(result) {
-                if (DEBUG) {
-                  logger.info("DEBUG: ServiceAS3Utils function parseAppDefinition - call to function Service HTTP WORKS: " + result);
-                }
-                createRestBody += result;
-                resolve();
-              })
-              .catch (function (err) {
-                logger.info("DEBUG: ServiceAS3Utils - function DeployService - call to function Service HTTP FAILED: " + JSON.stringify(err));
-                reject(err);
-              });
-            } else if (appData[i]["service-template"].toString() === "L4-service") {
-
-              logger.info("ServiceAS3Utils function parseAppDefinition - service template: " + appDetails["service-template"] + " triggered");
-
-              serviceTCPAS3Interface.createTCPAS3ServiceDefinition(appDetails)
-              .then (function(result) {
-                if (DEBUG) {
-                  logger.info("DEBUG: ServiceAS3Utils function parseAppDefinition - call to function Service TCP WORKS: " + result);
-                }
-                createRestBody += result;
-                resolve();
-              })
-              .catch (function (err) {
-                logger.info("DEBUG: ServiceAS3Utils - function DeployService - call to function Service TCP FAILED: " + JSON.stringify(err));
-                reject(err);
-              });
-            } else {
-              logger.info("ServiceAS3Utils function parseAppDefinition - service template: " + appDetails["service-template"] + " does not exist");
-              resolve();
-            }
-          });
-        }
-
         var BIGIPIP = tenantDefinition.clustername;
         var tenantName = tenantDefinition.tenant;
         var appData = tenantDefinition["app-data"];
@@ -85,8 +42,7 @@ function ServiceAS3Utils () {
         var jsonPoolDataMembers;
         var jsonPoolDataMonitors;
 
-        var serviceHTTPAS3Interface = new serviceHTTPAS3Func();
-        var serviceTCPAS3Interface = new serviceTCPAS3Func();
+
         var UtilsInterface = new serviceUtilsFunc();
 
         if (DEBUG) {
@@ -118,6 +74,17 @@ function ServiceAS3Utils () {
               logger.info("DEBUG: ServiceAS3Utils - Start building payload, " + appData.length + " app definitions to process");
             }
 
+            function parseApp(appDetails, counter) {
+              UtilsInterface.parseAppDefinition(appDetails, counter)
+                .then (function (jsonApp) {
+                  if (DEBUG) {
+                    logger.info("DEBUG: ServiceAS3Utils - returned app definition: " + jsonApp);
+                  }
+                  //createRestBody += JSON.stringify(jsonApp,' ','\t');
+                  createRestBody += jsonApp;
+                });
+            }
+
             var promises = [];
             if (DEBUG) {
               logger.info("DEBUG: ServiceAS3Utils - Start building promises");
@@ -126,7 +93,7 @@ function ServiceAS3Utils () {
               if (DEBUG) {
                 logger.info("DEBUG: ServiceAS3Utils - Start building promises LOOP: " + i);
               }
-              promises.push(parseAppDefinition(appData[i], i));
+              promises.push(parseApp(appData[i], i));
             }
 
             Promise.all(promises)
@@ -140,10 +107,13 @@ function ServiceAS3Utils () {
                 }
               )
               .then (function() {
-                UtilsInterface.SendPostAPICall(createRestBody, "https://localhost/mgmt/shared/appsvcs/declare", authAS3);
-              })
-              .catch (function (err) {
-                logger.info("DEBUG: ERRORRRR");
+                UtilsInterface.SendPostAPICall(createRestBody, "https://localhost/mgmt/shared/appsvcs/declare", authAS3)
+                  .then (function(){
+                    resolve();
+                  })
+                  .catch (function (err) {
+                    logger.info("DEBUG: ServiceAS3Utils: function DeployService - request to AS3 error is: "+ err);
+                  });
               });
         });
       }
