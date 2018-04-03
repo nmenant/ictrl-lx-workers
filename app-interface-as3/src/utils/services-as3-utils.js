@@ -12,6 +12,7 @@ var logger = require('f5-logger').getInstance();
 var request = require("../node_modules/request");
 var serviceHTTPAS3Func = require("./service-http-as3.js");
 var serviceTCPAS3Func = require("./service-tcp-as3.js");
+var serviceUtilsFunc = require("./utils.js");
 //var promise = require("../node_modules/promise");
 var DEBUG = true;
 // specify whether you want infoblox to handle the VS IP or if it will be provided by the consumer
@@ -34,6 +35,49 @@ function ServiceAS3Utils () {
     return new Promise (
       function (resolve, reject) {
 
+        function parseAppDefinition(appDetails, counter) {
+          return new Promise (function (resolve, reject) {
+            if (DEBUG) {
+              logger.info("DEBUG: ServiceAS3Utils -  function parseAppDefinition - service:  " + appDetails["service-template"] + " counter: " + counter);
+            }
+            if (appData[i]["service-template"].toString() === "web-service") {
+              logger.info("ServiceAS3Utils function parseAppDefinition - service template: " + appDetails["service-template"] + " triggered");
+
+              serviceHTTPAS3Interface.createHTTPAS3ServiceDefinition(appDetails)
+              .then (function(result) {
+                if (DEBUG) {
+                  logger.info("DEBUG: ServiceAS3Utils function parseAppDefinition - call to function Service HTTP WORKS: " + result);
+                }
+                createRestBody += result;
+                resolve();
+              })
+              .catch (function (err) {
+                logger.info("DEBUG: ServiceAS3Utils - function DeployService - call to function Service HTTP FAILED: " + JSON.stringify(err));
+                reject(err);
+              });
+            } else if (appData[i]["service-template"].toString() === "L4-service") {
+
+              logger.info("ServiceAS3Utils function parseAppDefinition - service template: " + appDetails["service-template"] + " triggered");
+
+              serviceTCPAS3Interface.createTCPAS3ServiceDefinition(appDetails)
+              .then (function(result) {
+                if (DEBUG) {
+                  logger.info("DEBUG: ServiceAS3Utils function parseAppDefinition - call to function Service TCP WORKS: " + result);
+                }
+                createRestBody += result;
+                resolve();
+              })
+              .catch (function (err) {
+                logger.info("DEBUG: ServiceAS3Utils - function DeployService - call to function Service TCP FAILED: " + JSON.stringify(err));
+                reject(err);
+              });
+            } else {
+              logger.info("ServiceAS3Utils function parseAppDefinition - service template: " + appDetails["service-template"] + " does not exist");
+              resolve();
+            }
+          });
+        }
+
         var BIGIPIP = tenantDefinition.clustername;
         var tenantName = tenantDefinition.tenant;
         var appData = tenantDefinition["app-data"];
@@ -43,6 +87,7 @@ function ServiceAS3Utils () {
 
         var serviceHTTPAS3Interface = new serviceHTTPAS3Func();
         var serviceTCPAS3Interface = new serviceTCPAS3Func();
+        var UtilsInterface = new serviceUtilsFunc();
 
         if (DEBUG) {
           logger.info("DEBUG: ServiceAS3Utils - function DeployService ");
@@ -70,49 +115,7 @@ function ServiceAS3Utils () {
             \"class\": \"Tenant\"`;
 
             if (DEBUG) {
-              logger.info("DEBUG: ServiceAS3Utils - Start building payload, " + appData.length + " to process");
-            }
-
-            function parseAppDefinition(appDetails, counter) {
-              return new Promise (function (resolve, reject) {
-                if (DEBUG) {
-                  logger.info("DEBUG: ServiceAS3Utils -  function parseAppDefinition - service:  " + appDetails["service-template"] + " counter: " + counter);
-                }
-                if (appData[i]["service-template"].toString() === "web-service") {
-                  logger.info("ServiceAS3Utils function parseAppDefinition - service template: " + appDetails["service-template"] + " triggered");
-
-                  serviceHTTPAS3Interface.createHTTPAS3ServiceDefinition(appDetails)
-                  .then (function(result) {
-                    if (DEBUG) {
-                      logger.info("DEBUG: ServiceAS3Utils function parseAppDefinition - call to function Service HTTP WORKS: " + result);
-                    }
-                    createRestBody += result;
-                    resolve();
-                  })
-                  .catch (function (err) {
-                    logger.info("DEBUG: ServiceAS3Utils - function DeployService - call to function Service HTTP FAILED: " + JSON.stringify(err));
-                    reject(err);
-                  });
-                } else if (appData[i]["service-template"].toString() === "L4-service") {
-                  logger.info("ServiceAS3Utils function parseAppDefinition - service template: " + appDetails["service-template"] + " triggered");
-
-                  serviceTCPAS3Interface.createTCPAS3ServiceDefinition(appDetails)
-                  .then (function(result) {
-                    if (DEBUG) {
-                      logger.info("DEBUG: ServiceAS3Utils function parseAppDefinition - call to function Service HTTP WORKS: " + result);
-                    }
-                    createRestBody += result;
-                    resolve();
-                  })
-                  .catch (function (err) {
-                    logger.info("DEBUG: ServiceAS3Utils - function DeployService - call to function Service HTTP FAILED: " + JSON.stringify(err));
-                    reject(err);
-                  });
-                } else {
-                  logger.info("ServiceAS3Utils function parseAppDefinition - service template: " + appDetails["service-template"] + " does not exist");
-                  resolve();
-                }
-              });
+              logger.info("DEBUG: ServiceAS3Utils - Start building payload, " + appData.length + " app definitions to process");
             }
 
             var promises = [];
@@ -127,61 +130,23 @@ function ServiceAS3Utils () {
             }
 
             Promise.all(promises)
-            .then (function () {
-              createRestBody += `
-            }
-          }`;
-          if (DEBUG) {
-            logger.info ("DEBUG: ServiceAS3Utils: function DeployService - request to AS3 body is: !" + createRestBody + "!");
-          }
-
-          var jsonBody = JSON.parse(createRestBody);
-          var options = {
-            method: 'POST',
-            url: 'https://localhost/mgmt/shared/appsvcs/declare',
-            headers:
-            {
-              "authorization": authAS3,
-              'content-type': 'application/json'
-            },
-            body: jsonBody,
-            json: true
-          };
-
-          if (DEBUG) {
-            logger.info ("DEBUG: ServiceAS3Utils: function DeployService - created options: !" );
-          }
-          request(options, function (error, response, body) {
-            if (error) {
-              if (DEBUG) {
-                logger.info("DEBUG: ServiceAS3Utils: function DeployService - request to AS3 failed: " + error);
-              }
-              reject (error);
-            } else {
-              if (DEBUG) {
-                logger.info("DEBUG: ServiceAS3Utils: function DeployService - request to AS3 - response: " + response.statusCode);
-              }
-              var status = response.statusCode.toString().slice(0,1);
-              if ( status == "2") {
-                if (DEBUG) {
-                  logger.info("DEBUG: ServiceAS3Utils: function DeployService - request to AS3 - 200 response");
+              .then (function () {
+                createRestBody += `
+                    }
+                  }`;
+                  if (DEBUG) {
+                    logger.info ("DEBUG: ServiceAS3Utils: function DeployService - request to AS3 body is: !" + createRestBody + "!");
+                  }
                 }
-                resolve();
-              } else {
-                if (DEBUG) {
-                  logger.info("DEBUG: ServiceAS3Utils: function DeployService - request to AS3 failed - body: " + JSON.stringify(body));
-                }
-                reject (body);
-              }
-            }
-          });
-
-        })
-        .catch (function (err) {
-          logger.info("DEBUG: ERRORRRR");
+              )
+              .then (function() {
+                UtilsInterface.SendPostAPICall(createRestBody, "https://localhost/mgmt/shared/appsvcs/declare", authAS3);
+              })
+              .catch (function (err) {
+                logger.info("DEBUG: ERRORRRR");
+              });
         });
-      });
-    }
-  }
+      }
+}
 
-  module.exports = ServiceAS3Utils;
+module.exports = ServiceAS3Utils;
